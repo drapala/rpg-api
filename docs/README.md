@@ -216,6 +216,26 @@ http://localhost:8080
 # Coverage report available at: target/site/jacoco/index.html
 ```
 
+### Curl Examples
+
+```bash
+# Create a character
+curl -sS -X POST http://localhost:8080/api/characters \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Arthur_Hero","job":"WARRIOR"}' | jq .
+
+# List characters
+curl -sS http://localhost:8080/api/characters | jq .
+
+# Get character details
+curl -sS http://localhost:8080/api/characters/<UUID> | jq .
+
+# Start a battle
+curl -sS -X POST http://localhost:8080/api/battles \
+  -H 'Content-Type: application/json' \
+  -d '{"attackerId":"<UUID>","defenderId":"<UUID>"}' | jq .
+```
+
 ### Building for Production
 
 ```bash
