@@ -29,6 +29,10 @@ public class BattleService {
         UUID aId = request.getAttackerId();
         UUID dId = request.getDefenderId();
 
+        if (aId.equals(dId)) {
+            throw new IllegalStateException("Attacker and defender must be different");
+        }
+
         Character attacker = repository.findById(aId).orElseThrow();
         Character defender = repository.findById(dId).orElseThrow();
 
@@ -94,4 +98,3 @@ public class BattleService {
                 atk.getName(), def.getName(), damage, def.getName(), newHp));
     }
 }
-
