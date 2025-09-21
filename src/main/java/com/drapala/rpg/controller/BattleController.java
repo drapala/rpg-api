@@ -23,13 +23,16 @@ public class BattleController {
     }
 
     @PostMapping
-    @Operation(summary = "Start battle", description = "Simulates a battle between two characters and returns a log and outcome")
+    @Operation(operationId = "startBattle", summary = "Start battle", description = "Simulates a battle between two characters and returns a log and outcome")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK",
+            @ApiResponse(responseCode = "200", description = "Battle result",
                     content = @Content(schema = @Schema(implementation = BattleResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Not found", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Invalid state (dead/same character)", content = @Content),
-            @ApiResponse(responseCode = "422", description = "Validation error", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Entity not found",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Invalid state (dead/same character)",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+            @ApiResponse(responseCode = "422", description = "Validation error",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
     public BattleResponse battle(@Valid @RequestBody BattleRequest request) {
         return battleService.battle(request);

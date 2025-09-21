@@ -28,12 +28,14 @@ public class CharacterController {
     }
 
     @PostMapping
-    @Operation(summary = "Create character", description = "Creates a new character with validated name and job")
+    @Operation(operationId = "createCharacter", summary = "Create character", description = "Creates a new character with validated name and job")
     @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Created",
+            @ApiResponse(responseCode = "201", description = "Character created",
                     content = @Content(schema = @Schema(implementation = CharacterResponse.class))),
-            @ApiResponse(responseCode = "422", description = "Validation error", content = @Content),
-            @ApiResponse(responseCode = "409", description = "Invalid state", content = @Content)
+            @ApiResponse(responseCode = "422", description = "Validation error",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+            @ApiResponse(responseCode = "409", description = "Invalid state",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
     public ResponseEntity<CharacterResponse> create(@Valid @RequestBody CreateCharacterRequest request) {
         CharacterResponse res = characters.create(request);
@@ -41,17 +43,18 @@ public class CharacterController {
     }
 
     @GetMapping
-    @Operation(summary = "List characters", description = "Returns all existing characters")
+    @Operation(operationId = "listCharacters", summary = "List characters", description = "Returns all existing characters")
     public List<CharacterResponse> list() {
         return characters.list();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get character", description = "Returns character details by ID")
+    @Operation(operationId = "getCharacter", summary = "Get character", description = "Returns character details by ID")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "OK",
+            @ApiResponse(responseCode = "200", description = "Character retrieved",
                     content = @Content(schema = @Schema(implementation = CharacterResponse.class))),
-            @ApiResponse(responseCode = "404", description = "Not found", content = @Content)
+            @ApiResponse(responseCode = "404", description = "Entity not found",
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
     public CharacterResponse get(@PathVariable("id") UUID id) {
         return characters.get(id);
