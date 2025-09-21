@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -33,5 +34,10 @@ class CharacterControllerTests {
                         .content(objectMapper.writeValueAsString(req)))
                 .andExpect(status().isCreated());
     }
-}
 
+    @Test
+    void getNonExistentCharacterReturns404() throws Exception {
+        mockMvc.perform(get("/api/characters/" + java.util.UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+    }
+}
