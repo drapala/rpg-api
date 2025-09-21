@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,9 +35,11 @@ public class CharacterController {
             @ApiResponse(responseCode = "201", description = "Character created",
                     content = @Content(schema = @Schema(implementation = CharacterResponse.class))),
             @ApiResponse(responseCode = "422", description = "Validation error",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"Invalid input\",\n  \"details\": {\n    \"name\": \"Name must be 4-15 characters long\"\n  },\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}"))),
             @ApiResponse(responseCode = "409", description = "Invalid state",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"CONFLICT\",\n  \"message\": \"Invalid state\",\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}")))
     })
     public ResponseEntity<CharacterResponse> create(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -63,7 +66,8 @@ public class CharacterController {
             @ApiResponse(responseCode = "200", description = "Character retrieved",
                     content = @Content(schema = @Schema(implementation = CharacterResponse.class))),
             @ApiResponse(responseCode = "404", description = "Entity not found",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"NOT_FOUND\",\n  \"message\": \"Character not found: 550e8400-e29b-41d4-a716-446655440000\",\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}")))
     })
     public CharacterResponse get(@Parameter(description = "Character ID", example = "550e8400-e29b-41d4-a716-446655440000")
                                  @PathVariable("id") UUID id) {
