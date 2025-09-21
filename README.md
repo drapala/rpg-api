@@ -36,6 +36,10 @@ make coverage    # test + open coverage path
 
 Service starts on http://localhost:8080.
 
+### API Docs (Swagger UI)
+- OpenAPI JSON: http://localhost:8080/v3/api-docs
+- Swagger UI: http://localhost:8080/swagger-ui.html
+
 ## 5) API Endpoints
 - POST /api/characters
 - GET /api/characters
