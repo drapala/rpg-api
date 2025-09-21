@@ -11,12 +11,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class CreateCharacterRequest {
-    @NotBlank
-    @Size(min = 4, max = 15)
-    @Pattern(regexp = "^[a-zA-Z_]+$")
+    @NotBlank(message = "Name is required")
+    @Size(min = 4, max = 15, message = "Name must be 4-15 characters long")
+    @Pattern(regexp = "^[a-zA-Z_]+$", message = "Name may contain letters and underscore only")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Job is required")
     private Job job;
 }
-

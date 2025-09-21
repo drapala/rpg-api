@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -67,5 +68,24 @@ class BattleControllerTests {
                         .content(battleJson))
                 .andExpect(status().isConflict());
     }
-}
 
+    @Test
+    void battleWithSameCharacterReturns409() throws Exception {
+        CreateCharacterRequest a = new CreateCharacterRequest();
+        a.setName("Solo");
+        a.setJob(Job.WARRIOR);
+        String attackerJson = objectMapper.writeValueAsString(a);
+
+        String attackerResponse = mockMvc.perform(post("/api/characters")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(attackerJson))
+                .andReturn().getResponse().getContentAsString();
+
+        var id = objectMapper.readTree(attackerResponse).get("id").asText();
+        String battleJson = "{\"attackerId\":\"" + id + "\",\"defenderId\":\"" + id + "\"}";
+        mockMvc.perform(post("/api/battles")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(battleJson))
+                .andExpect(status().isConflict());
+    }
+}
