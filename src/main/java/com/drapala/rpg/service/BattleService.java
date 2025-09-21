@@ -35,8 +35,10 @@ public class BattleService {
             throw new IllegalStateException("Attacker and defender must be different");
         }
 
-        Character attacker = repository.findById(aId).orElseThrow();
-        Character defender = repository.findById(dId).orElseThrow();
+        Character attacker = repository.findById(aId)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Character not found: " + aId));
+        Character defender = repository.findById(dId)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Character not found: " + dId));
 
         if (!attacker.isAlive() || !defender.isAlive()) {
             throw new IllegalStateException("Both characters must be alive to battle");

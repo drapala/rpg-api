@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,15 @@ public class CharacterController {
             @ApiResponse(responseCode = "409", description = "Invalid state",
                     content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
-    public ResponseEntity<CharacterResponse> create(@Valid @RequestBody CreateCharacterRequest request) {
+    public ResponseEntity<CharacterResponse> create(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "Character payload",
+                    content = @Content(
+                            schema = @Schema(implementation = CreateCharacterRequest.class),
+                            examples = @io.swagger.v3.oas.annotations.media.ExampleObject(
+                                    value = "{\n  \"name\": \"Arthur_Hero\",\n  \"job\": \"WARRIOR\"\n}")))
+            @Valid @RequestBody CreateCharacterRequest request) {
         CharacterResponse res = characters.create(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
@@ -56,7 +65,8 @@ public class CharacterController {
             @ApiResponse(responseCode = "404", description = "Entity not found",
                     content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
-    public CharacterResponse get(@PathVariable("id") UUID id) {
+    public CharacterResponse get(@Parameter(description = "Character ID", example = "550e8400-e29b-41d4-a716-446655440000")
+                                 @PathVariable("id") UUID id) {
         return characters.get(id);
     }
 }

@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -34,7 +35,14 @@ public class BattleController {
             @ApiResponse(responseCode = "422", description = "Validation error",
                     content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
     })
-    public BattleResponse battle(@Valid @RequestBody BattleRequest request) {
+    public BattleResponse battle(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    required = true,
+                    description = "Battle participants",
+                    content = @Content(
+                            schema = @Schema(implementation = BattleRequest.class),
+                            examples = @ExampleObject(value = "{\n  \"attackerId\": \"550e8400-e29b-41d4-a716-446655440000\",\n  \"defenderId\": \"6ba7b810-9dad-11d1-80b4-00c04fd430c8\"\n}")))
+            @Valid @org.springframework.web.bind.annotation.RequestBody BattleRequest request) {
         return battleService.battle(request);
     }
 }
