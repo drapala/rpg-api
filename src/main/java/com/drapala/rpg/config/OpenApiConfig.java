@@ -21,8 +21,7 @@ public class OpenApiConfig {
         return GroupedOpenApi
                 .builder()
                 .group("rpg")
-                .packagesToScan("com.drapala.rpg.controller")
+                .pathsToMatch("/api/**")
                 .build();
     }
 }
-
