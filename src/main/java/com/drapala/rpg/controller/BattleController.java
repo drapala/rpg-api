@@ -29,11 +29,14 @@ public class BattleController {
             @ApiResponse(responseCode = "200", description = "Battle result",
                     content = @Content(schema = @Schema(implementation = BattleResponse.class))),
             @ApiResponse(responseCode = "404", description = "Entity not found",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"NOT_FOUND\",\n  \"message\": \"Character not found: 550e8400-e29b-41d4-a716-446655440000\",\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}"))),
             @ApiResponse(responseCode = "409", description = "Invalid state (dead/same character)",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class))),
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"CONFLICT\",\n  \"message\": \"Both characters must be alive to battle\",\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}"))),
             @ApiResponse(responseCode = "422", description = "Validation error",
-                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class)))
+                    content = @Content(schema = @Schema(implementation = com.drapala.rpg.dto.ErrorResponse.class),
+                            examples = @ExampleObject(value = "{\n  \"code\": \"VALIDATION_ERROR\",\n  \"message\": \"Invalid input\",\n  \"details\": {\n    \"attackerId\": \"must not be null\"\n  },\n  \"timestamp\": \"2025-09-21T12:00:00Z\"\n}")))
     })
     public BattleResponse battle(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
