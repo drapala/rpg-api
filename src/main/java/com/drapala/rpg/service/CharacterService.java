@@ -45,7 +45,8 @@ public class CharacterService {
     }
 
     public CharacterResponse get(UUID id) {
-        Character c = repository.findById(id).orElseThrow();
+        Character c = repository.findById(id)
+                .orElseThrow(() -> new java.util.NoSuchElementException("Character not found: " + id));
         return toResponse(c);
     }
 
@@ -68,4 +69,3 @@ public class CharacterService {
                 .build();
     }
 }
-
