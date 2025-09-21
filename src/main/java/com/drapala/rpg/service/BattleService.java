@@ -94,7 +94,7 @@ public class BattleService {
     }
 
     private void executeHit(Character atk, Character def, int baseDamage, List<String> logLines) {
-        int damage = Math.max(0, baseDamage);
+        int damage = calculateDamage(baseDamage);
         int newHp = Math.max(0, def.getCurrentLifePoints() - damage);
         def.setCurrentLifePoints(newHp);
         if (newHp == 0) {
@@ -102,5 +102,13 @@ public class BattleService {
         }
         logLines.add(String.format("%s attacks %s for %d damage, %s has %d HP remaining.",
                 atk.getName(), def.getName(), damage, def.getName(), newHp));
+    }
+
+    protected int calculateDamage(int attack) {
+        // Por padrão, retorna um valor entre attack/2 e attack (inclusive)
+        // Isso simula a variação de dano em um RPG típico
+        int minDamage = attack / 2;
+        int maxDamage = attack;
+        return java.util.concurrent.ThreadLocalRandom.current().nextInt(minDamage, maxDamage + 1);
     }
 }
