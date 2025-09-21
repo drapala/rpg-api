@@ -6,6 +6,7 @@ import com.drapala.rpg.dto.CreateCharacterRequest;
 import com.drapala.rpg.model.Job;
 import com.drapala.rpg.repository.InMemoryCharacterRepository;
 import com.drapala.rpg.service.stats.*;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -22,7 +23,7 @@ class BattleServiceTests {
 
     private BattleService newBattleService(InMemoryCharacterRepository repo) {
         StatsCalculatorResolver resolver = new StatsCalculatorResolver(new WarriorStatsCalculator(), new ThiefStatsCalculator(), new MageStatsCalculator());
-        return new BattleService(repo, resolver);
+        return new BattleService(repo, resolver, new SimpleMeterRegistry());
     }
 
     @Test

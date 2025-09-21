@@ -4,8 +4,8 @@ import com.drapala.rpg.dto.BattleRequest;
 import com.drapala.rpg.dto.BattleResponse;
 import com.drapala.rpg.model.Character;
 import com.drapala.rpg.repository.CharacterRepository;
-import com.drapala.rpg.service.stats.StatsCalculator;
 import com.drapala.rpg.service.stats.StatsCalculatorResolver;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Service;
@@ -19,10 +19,12 @@ import java.util.UUID;
 public class BattleService {
     private final CharacterRepository repository;
     private final StatsCalculatorResolver resolver;
+    private final MeterRegistry meterRegistry;
 
-    public BattleService(CharacterRepository repository, StatsCalculatorResolver resolver) {
+    public BattleService(CharacterRepository repository, StatsCalculatorResolver resolver, MeterRegistry meterRegistry) {
         this.repository = repository;
         this.resolver = resolver;
+        this.meterRegistry = meterRegistry;
     }
 
     public BattleResponse battle(BattleRequest request) {
@@ -45,18 +47,27 @@ public class BattleService {
         try {
             List<String> logLines = new ArrayList<>();
             log.info("Battle started: {} vs {}", attacker.getId(), defender.getId());
+            if (meterRegistry != null) {
+                meterRegistry.counter("battle.started").increment();
+            }
             logLines.add(String.format("Battle between %s (%s) - %d HP and %s (%s) - %d HP begins!",
                     attacker.getName(), attacker.getJob(), attacker.getCurrentLifePoints(),
                     defender.getName(), defender.getJob(), defender.getCurrentLifePoints()));
 
-            // Determine first attacker by speed
-            Character first = firstAttacker(attacker, defender);
+            // Determine first attacker by speed (precompute speeds once)
+            int attackerSpeed = resolver.forJob(attacker.getJob()).speed(attacker.getStats());
+            int defenderSpeed = resolver.forJob(defender.getJob()).speed(defender.getStats());
+            Character first = attackerSpeed == defenderSpeed ? attacker : (attackerSpeed > defenderSpeed ? attacker : defender);
             Character second = first == attacker ? defender : attacker;
 
+            // Precompute constant damage per attacker for current battle
+            int firstDamage = resolver.forJob(first.getJob()).attack(first.getStats());
+            int secondDamage = resolver.forJob(second.getJob()).attack(second.getStats());
+
             while (attacker.isAlive() && defender.isAlive()) {
-                executeHit(first, second, logLines);
+                executeHit(first, second, firstDamage, logLines);
                 if (!second.isAlive()) break;
-                executeHit(second, first, logLines);
+                executeHit(second, first, secondDamage, logLines);
             }
 
             Character winner = attacker.isAlive() ? attacker : defender;
@@ -64,6 +75,9 @@ public class BattleService {
             logLines.add(String.format("%s wins the battle! %s still has %d HP remaining!",
                     winner.getName(), winner.getName(), winner.getCurrentLifePoints()));
             log.info("Battle finished: winner={} loser={}", winner.getId(), loser.getId());
+            if (meterRegistry != null) {
+                meterRegistry.counter("battle.completed").increment();
+            }
 
             // Persist state
             repository.save(attacker);
@@ -79,16 +93,8 @@ public class BattleService {
         }
     }
 
-    private Character firstAttacker(Character a, Character b) {
-        int sa = resolver.forJob(a.getJob()).speed(a.getStats());
-        int sb = resolver.forJob(b.getJob()).speed(b.getStats());
-        if (sa == sb) return a; // tie -> request attacker
-        return sa > sb ? a : b;
-    }
-
-    private void executeHit(Character atk, Character def, List<String> logLines) {
-        StatsCalculator calc = resolver.forJob(atk.getJob());
-        int damage = Math.max(0, calc.attack(atk.getStats()));
+    private void executeHit(Character atk, Character def, int baseDamage, List<String> logLines) {
+        int damage = Math.max(0, baseDamage);
         int newHp = Math.max(0, def.getCurrentLifePoints() - damage);
         def.setCurrentLifePoints(newHp);
         if (newHp == 0) {
