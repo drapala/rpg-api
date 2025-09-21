@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: run test coverage verify build clean
+.PHONY: run test coverage verify build clean restart
 
 run:
 	./mvnw spring-boot:run
@@ -20,3 +20,5 @@ build:
 clean:
 	./mvnw clean
 
+restart:
+	./scripts/restart.sh
