@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running unit tests..."
+./mvnw -q -DskipTests=false test
+
+echo "Generating coverage report..."
+./mvnw -q jacoco:report >/dev/null 2>&1 || true
+
+echo "Pre-commit checks passed."
+

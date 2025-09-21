@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/characters")
+@RequestMapping(value = "/api/characters", produces = "application/json")
 public class CharacterController {
     private final CharacterService characters;
 
@@ -36,4 +36,3 @@ public class CharacterController {
         return characters.get(id);
     }
 }
-

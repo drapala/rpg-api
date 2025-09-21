@@ -7,6 +7,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
+@org.springframework.context.annotation.Profile("!prod")
 public class InMemoryCharacterRepository implements CharacterRepository {
     private final Map<UUID, Character> store = new ConcurrentHashMap<>();
 
@@ -26,4 +27,3 @@ public class InMemoryCharacterRepository implements CharacterRepository {
         return new ArrayList<>(store.values());
     }
 }
-

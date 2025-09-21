@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/battles")
+@RequestMapping(value = "/api/battles", produces = "application/json")
 public class BattleController {
     private final BattleService battleService;
 
@@ -20,4 +20,3 @@ public class BattleController {
         return battleService.battle(request);
     }
 }
-
